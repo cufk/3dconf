@@ -1,0 +1,7 @@
+{
+  "name": "aniconfigurator-webapp",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "3D-produktkonfigurator i webbläsaren – realtids-WebGL med högkvalitativ rendering, regler, prissättning och offertflöde."
+}
