@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AniConfigurator – 3D-produktkonfigurator</title>
+<link rel="stylesheet" href="./css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">
+    <span class="brand-mark">◆</span>
+    <div>
+      <h1>AniConfigurator</h1>
+      <p id="product-name">Fjäll Ryggsäck – konfigurera i 3D i realtid</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div id="price-badge" title="Totalt pris">–</div>
+    <button id="btn-quote" class="btn primary">Skicka offert</button>
+    <button id="btn-menu" class="btn ghost" aria-label="Visa inställningar">☰</button>
+  </div>
+</header>
+
+<main id="stage">
+  <canvas id="scene"></canvas>
+  <div id="hint">Dra för att rotera · Scrolla eller nyp för att zooma · Högerklicka för att panorera</div>
+  <div id="fps-chip" title="Bildfrekvens"></div>
+</main>
+
+<aside id="panel">
+  <div id="panel-sections"></div>
+</aside>
+
+<div id="modal-backdrop" hidden>
+  <div id="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="modal-title">Offert</h2>
+      <button id="modal-close" class="btn ghost">✕</button>
+    </div>
+    <div id="modal-body"></div>
+    <div class="modal-foot">
+      <button id="modal-copy" class="btn primary">Kopiera offert</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
