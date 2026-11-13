@@ -1,7 +1,7 @@
 {
-  "name": "aniconfigurator-webapp",
+  "name": "3dconfig",
   "version": "1.0.0",
   "type": "module",
   "private": true,
-  "description": "3D-produktkonfigurator i webbläsaren – realtids-WebGL med högkvalitativ rendering, regler, prissättning och offertflöde."
+  "description": "3DConfig – 3D-produktkonfigurator i webbläsaren: realtids-WebGL, högkvalitativ rendering, regler, prissättning och offertflöde."
 }

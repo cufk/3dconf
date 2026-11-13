@@ -10,19 +10,19 @@ import { defaultQuality } from './config.js';
 export const QUALITY_PRESETS = {
   lag: {
     label: 'Låg (snabbast)',
-    patch: { renderScale: 0.75, shadowMap: 1024, bloom: false, ssao: false, env: 'studio', envIntensity: 1.0, exposure: 1.05 }
+    patch: { renderScale: 0.75, shadowMap: 1024, bloom: false, ssao: false, env: 'kokdag', envIntensity: 1.0, exposure: 1.05 }
   },
   medel: {
     label: 'Medel',
-    patch: { renderScale: 1.0, shadowMap: 2048, bloom: false, ssao: true, ssaoRadius: 6, env: 'studio', envIntensity: 1.0, exposure: 1.05 }
+    patch: { renderScale: 1.0, shadowMap: 2048, bloom: false, ssao: true, ssaoRadius: 6, env: 'kokdag', envIntensity: 1.0, exposure: 1.05 }
   },
   hog: {
     label: 'Hög',
-    patch: { renderScale: 1.5, shadowMap: 2048, bloom: true, bloomStrength: 0.35, bloomRadius: 0.55, bloomThreshold: 0.82, ssao: true, ssaoRadius: 7, env: 'studio', envIntensity: 1.05, exposure: 1.05 }
+    patch: { renderScale: 1.5, shadowMap: 2048, bloom: true, bloomStrength: 0.3, bloomRadius: 0.55, bloomThreshold: 0.85, ssao: true, ssaoRadius: 7, env: 'kokdag', envIntensity: 1.0, exposure: 1.05 }
   },
   ultra: {
     label: 'Ultra (max kvalitet)',
-    patch: { renderScale: 2.5, shadowMap: 4096, bloom: true, bloomStrength: 0.45, bloomRadius: 0.7, bloomThreshold: 0.78, ssao: true, ssaoRadius: 9, env: 'studio', envIntensity: 1.1, exposure: 1.08 }
+    patch: { renderScale: 2.5, shadowMap: 4096, bloom: true, bloomStrength: 0.4, bloomRadius: 0.7, bloomThreshold: 0.8, ssao: true, ssaoRadius: 9, env: 'kokdag', envIntensity: 1.1, exposure: 1.08 }
   }
 };
 
@@ -32,6 +32,47 @@ const TONE_MAPPING = {
   none: THREE.NoToneMapping
 };
 
+function panel(w, h, color, x, y, z) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color }));
+  m.position.set(x, y, z);
+  m.lookAt(0, 10, 0);
+  return m;
+}
+
+function envSceneKokDag() {
+  const s = new THREE.Scene();
+  s.background = new THREE.Color(0x11161d);
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(70, 70),
+    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.55, 0.52, 0.47) })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -6;
+  s.add(floor);
+  s.add(panel(18, 12, new THREE.Color(6.5, 7.5, 9.0), -12, 12, 2));
+  s.add(panel(14, 10, new THREE.Color(2.6, 2.8, 3.2), 10, 11, -4));
+  s.add(panel(20, 5, new THREE.Color(1.6, 1.65, 1.75), 0, 18, 4));
+  s.add(panel(6, 6, new THREE.Color(1.4, 1.1, 0.8), 8, 7, 6));
+  return s;
+}
+
+function envSceneKokKväll() {
+  const s = new THREE.Scene();
+  s.background = new THREE.Color(0x0b0906);
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(70, 70),
+    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.14, 0.12, 0.1) })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -6;
+  s.add(floor);
+  s.add(panel(5, 5, new THREE.Color(9, 5.5, 2.6), -4, 16, 2));
+  s.add(panel(5, 5, new THREE.Color(8, 5, 2.4), 4, 16, 2));
+  s.add(panel(8, 4, new THREE.Color(0.5, 0.7, 1.1), -12, 10, 0));
+  s.add(panel(12, 3, new THREE.Color(0.35, 0.3, 0.26), 0, 17, -6));
+  return s;
+}
+
 function envSceneStudio() {
   const s = new THREE.Scene();
   s.background = new THREE.Color(0x0a0b0e);
@@ -40,112 +81,20 @@ function envSceneStudio() {
     new THREE.MeshBasicMaterial({ color: new THREE.Color(0.32, 0.34, 0.38) })
   );
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -4;
+  floor.position.y = -6;
   s.add(floor);
-  const box = (w, h, color, x, y, z, ry = 0, rx = 0) => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color }));
-    m.position.set(x, y, z);
-    m.rotation.set(rx, ry, 0);
-    m.lookAt(0, 0, 0);
-    s.add(m);
-  };
-  box(14, 14, new THREE.Color(7, 7, 7.2), -8, 9, -4);
-  box(10, 10, new THREE.Color(3.2, 3.4, 3.8), 9, 5, 2);
-  box(16, 4, new THREE.Color(2.4, 2.5, 2.7), 0, 11, 6);
-  box(6, 18, new THREE.Color(1.1, 1.15, 1.25), -10, 3, 6, 0, 0.4);
-  box(8, 8, new THREE.Color(0.9, 0.95, 1.1), 4, 2, -10);
-  return s;
-}
-
-function envSceneSunset() {
-  const s = new THREE.Scene();
-  const c = document.createElement('canvas');
-  c.width = 1024;
-  c.height = 512;
-  const g = c.getContext('2d');
-  const grad = g.createLinearGradient(0, 0, 0, 512);
-  grad.addColorStop(0, '#2b2440');
-  grad.addColorStop(0.45, '#7a3b52');
-  grad.addColorStop(0.72, '#e2793f');
-  grad.addColorStop(0.85, '#ffc46b');
-  grad.addColorStop(1, '#3a2c28');
-  g.fillStyle = grad;
-  g.fillRect(0, 0, 1024, 512);
-  const sky = new THREE.Mesh(
-    new THREE.SphereGeometry(60, 32, 16),
-    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), side: THREE.BackSide })
-  );
-  s.add(sky);
-  const sun = new THREE.Mesh(
-    new THREE.PlaneGeometry(10, 10),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(18, 10, 4) })
-  );
-  sun.position.set(-18, 6, -50);
-  sun.lookAt(0, 0, 0);
-  s.add(sun);
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(80, 80),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.16, 0.12, 0.12) })
-  );
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -4;
-  s.add(floor);
-  const fill = new THREE.Mesh(
-    new THREE.PlaneGeometry(24, 12),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.25, 0.3, 0.5) })
-  );
-  fill.position.set(14, 12, 10);
-  fill.lookAt(0, 0, 0);
-  s.add(fill);
-  return s;
-}
-
-function envSceneWarehouse() {
-  const s = new THREE.Scene();
-  s.background = new THREE.Color(0x0c0e13);
-  const ceil = new THREE.Mesh(
-    new THREE.PlaneGeometry(50, 50),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.1, 0.11, 0.14) })
-  );
-  ceil.rotation.x = Math.PI / 2;
-  ceil.position.y = 14;
-  s.add(ceil);
-  for (let i = -2; i <= 2; i++) {
-    const strip = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.2, 26),
-      new THREE.MeshBasicMaterial({ color: new THREE.Color(4.5, 4.6, 5.0) })
-    );
-    strip.rotation.x = Math.PI / 2;
-    strip.position.set(i * 7, 13.9, 0);
-    s.add(strip);
-  }
-  const wall = new THREE.Mesh(
-    new THREE.PlaneGeometry(60, 20),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.22, 0.24, 0.28) })
-  );
-  wall.position.set(0, 4, -24);
-  s.add(wall);
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(60, 60),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.2, 0.21, 0.24) })
-  );
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -4;
-  s.add(floor);
-  const side = new THREE.Mesh(
-    new THREE.PlaneGeometry(30, 8),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(0.9, 1.0, 1.2) })
-  );
-  side.position.set(-24, 6, 4);
-  side.lookAt(0, 0, 0);
-  s.add(side);
+  s.add(panel(14, 14, new THREE.Color(7, 7, 7.2), -8, 12, -4));
+  s.add(panel(10, 10, new THREE.Color(3.2, 3.4, 3.8), 9, 8, 2));
+  s.add(panel(16, 4, new THREE.Color(2.4, 2.5, 2.7), 0, 16, 6));
+  s.add(panel(6, 18, new THREE.Color(1.1, 1.15, 1.25), -10, 6, 6));
+  s.add(panel(8, 8, new THREE.Color(0.9, 0.95, 1.1), 4, 5, -10));
   return s;
 }
 
 const ENV_BUILDERS = {
-  studio: envSceneStudio,
-  solnedgang: envSceneSunset,
-  industri: envSceneWarehouse
+  kokdag: envSceneKokDag,
+  kokkvall: envSceneKokKväll,
+  studio: envSceneStudio
 };
 
 export function createQualityManager(renderer, scene, camera, keyLight) {
@@ -158,7 +107,7 @@ export function createQualityManager(renderer, scene, camera, keyLight) {
 
   function getEnv(name) {
     if (!envCache.has(name)) {
-      const builder = ENV_BUILDERS[name] || ENV_BUILDERS.studio;
+      const builder = ENV_BUILDERS[name] || ENV_BUILDERS.kokdag;
       envCache.set(name, pmrem.fromScene(builder(), 0.06).texture);
     }
     return envCache.get(name);
@@ -171,7 +120,7 @@ export function createQualityManager(renderer, scene, camera, keyLight) {
       ssaoPass = new SSAOPass(scene, camera, Math.max(1, width), Math.max(1, height));
       ssaoPass.kernelRadius = q.ssaoRadius;
       ssaoPass.minDistance = 0.001;
-      ssaoPass.maxDistance = 0.12;
+      ssaoPass.maxDistance = 0.15;
       composer.addPass(ssaoPass);
     } else {
       ssaoPass = null;

@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
   defaultState, sanitizeState, encodeState, decodeState,
-  computePrice, summarize, enforceRules, sizeDef
+  computePrice, summarize, enforceRules, sizeDef,
+  partDef, MATERIALS, PRODUCT_NAME
 } from './config.js';
 import { createProduct } from './product.js';
 import { createQualityManager, QUALITY_PRESETS } from './quality.js';
@@ -23,47 +24,38 @@ renderer.toneMappingExposure = 1.05;
 
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-camera.position.set(5.6, 3.4, 6.8);
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 200);
+camera.position.set(8, 11.5, 9.5);
 
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 1.9, 0);
+controls.target.set(0, 9.8, 0);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
-controls.minDistance = 3.2;
-controls.maxDistance = 16;
-controls.maxPolarAngle = 1.68;
-controls.autoRotateSpeed = 1.2;
+controls.minDistance = 5;
+controls.maxDistance = 32;
+controls.maxPolarAngle = 1.62;
+controls.autoRotateSpeed = 1.0;
 
-const hemi = new THREE.HemisphereLight(0xbfd0e8, 0x2a2620, 0.35);
+const hemi = new THREE.HemisphereLight(0xbfd0e8, 0x2a2620, 0.32);
 scene.add(hemi);
 
-const keyLight = new THREE.DirectionalLight(0xffffff, 2.6);
-keyLight.position.set(5, 8, 4);
+const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+keyLight.position.set(-7, 17, 6);
 keyLight.castShadow = true;
-keyLight.shadow.camera.left = -6;
-keyLight.shadow.camera.right = 6;
-keyLight.shadow.camera.top = 8;
-keyLight.shadow.camera.bottom = -4;
-keyLight.shadow.camera.near = 1;
-keyLight.shadow.camera.far = 25;
+keyLight.shadow.camera.left = -10;
+keyLight.shadow.camera.right = 10;
+keyLight.shadow.camera.top = 24;
+keyLight.shadow.camera.bottom = -8;
+keyLight.shadow.camera.near = 2;
+keyLight.shadow.camera.far = 45;
 keyLight.shadow.mapSize.set(2048, 2048);
 scene.add(keyLight);
 
-const rimLight = new THREE.DirectionalLight(0x9db8ff, 0.8);
-rimLight.position.set(-6, 4, -6);
+const rimLight = new THREE.DirectionalLight(0x9db8ff, 0.7);
+rimLight.position.set(7, 8, -7);
 scene.add(rimLight);
 
-const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(60, 60),
-  new THREE.ShadowMaterial({ opacity: 0.32 })
-);
-ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
-scene.add(ground);
-
 const product = createProduct();
-scene.add(product.group);
 
 const quality = createQualityManager(renderer, scene, camera, keyLight);
 
@@ -76,7 +68,7 @@ function loadInitialState() {
     if (s) return s;
   }
   try {
-    const saved = localStorage.getItem('aniconfigurator-state');
+    const saved = localStorage.getItem('3dconfig-state');
     if (saved) {
       const s = sanitizeState(JSON.parse(saved));
       if (s) return s;
@@ -109,19 +101,19 @@ const fx = {
 
 function applyStateToModel() {
   product.apply(state, fx);
+  const g = product.getGroup();
+  if (g && g.parent !== scene) scene.add(g);
 }
 
 function persist() {
   try {
-    localStorage.setItem('aniconfigurator-state', JSON.stringify(state));
+    localStorage.setItem('3dconfig-state', JSON.stringify(state));
   } catch (e) { /* ignore */ }
-  const url = `${location.origin}${location.pathname}#cfg=${encodeState(state)}`;
   history.replaceState(null, '', `#cfg=${encodeState(state)}`);
-  return url;
 }
 
 function refreshUI() {
-  ui.update(state, { quality: quality.state, shareURL: currentShareURL() });
+  ui.update(state, { quality: quality.state });
 }
 
 function currentShareURL() {
@@ -134,8 +126,7 @@ function commit(changedRules) {
   persist();
   refreshUI();
   if (changedRules && changedRules.length) {
-    const first = changedRules[0];
-    toast(`Regel: ${first.msg}`);
+    toast(`Regel: ${changedRules[0].msg}`);
   }
 }
 
@@ -163,11 +154,15 @@ const ui = createUI(document.getElementById('panel-sections'), {
     persist();
     refreshUI();
     if (JSON.stringify(state) !== before) {
-      toast(changed.length ? `Regel: ${changed[0].msg}` : 'Storlek ändrad');
+      toast(changed.length ? `Regel: ${changed[0].msg}` : 'Bredd ändrad');
     }
   },
   onPartMaterial(part, mat) {
     state.parts[part].material = mat;
+    const def = partDef(part);
+    if (def && def.locked && MATERIALS[mat]) {
+      state.parts[part].color = MATERIALS[mat].color;
+    }
     commit();
   },
   onPartColor(part, hex) {
@@ -207,14 +202,14 @@ const ui = createUI(document.getElementById('panel-sections'), {
   onDownloadJSON() {
     const price = computePrice(state);
     const payload = {
-      produkt: 'Fjäll Ryggsäck',
+      produkt: PRODUCT_NAME,
       konfiguration: state,
       sammanfattning: summarize(state).split('\n'),
       pris: { linjer: price.lines, totalt: price.total, valuta: 'SEK' },
       delbar_lank: currentShareURL()
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    downloadBlob(blob, 'aniconfigurator-konfiguration.json');
+    downloadBlob(blob, '3dconfig-konfiguration.json');
   },
   onQuote() {
     openQuoteModal();
@@ -252,10 +247,11 @@ function exportPNG(targetWidth) {
   quality.setSize(Math.round(cssW * scale), Math.round(cssH * scale));
   quality.render();
   canvas.toBlob((blob) => {
-    if (blob) downloadBlob(blob, `aniconfigurator-${targetWidth}px.png`);
+    if (blob) downloadBlob(blob, `3dconfig-${targetWidth}px.png`);
     renderer.setPixelRatio(prevPR);
     renderer.setSize(cssW, cssH, false);
-    quality.setSize(renderer.getSize(new THREE.Vector2()).x, renderer.getSize(new THREE.Vector2()).y);
+    const s = renderer.getSize(new THREE.Vector2());
+    quality.setSize(s.x, s.y);
     toast(`Bild exporterad (${targetWidth}px bred)`);
   }, 'image/png');
 }
@@ -267,17 +263,17 @@ function openQuoteModal() {
   const price = computePrice(state);
   const size = sizeDef(state.size);
   modalBody.innerHTML = `
-    <div><strong>Offertförfrågan – Fjäll Ryggsäck</strong></div>
-    <div class="muted">Genererad ${new Date().toLocaleString('sv-SE')} · AniConfigurator</div>
+    <div><strong>Offertförfrågan – ${PRODUCT_NAME}</strong></div>
+    <div class="muted">Genererad ${new Date().toLocaleString('sv-SE')} · 3DConfig</div>
     <div style="height:10px"></div>
     <div>${summarize(state).split('\n').join('<br>')}</div>
     <div style="height:10px"></div>
-    <div><strong>Totalt: ${price.total.toLocaleString('sv-SE')} kr</strong> (${size.volume}, inkl. tillval och material)</div>
+    <div><strong>Totalt: ${price.total.toLocaleString('sv-SE')} kr</strong> (${size.volume}, inkl. tillval och ytfinish)</div>
     <div class="muted" style="margin-top:10px">Delbar länk till denna konfiguration:<br>${currentShareURL()}</div>
   `;
   modalBackdrop.hidden = false;
   document.getElementById('modal-copy').onclick = async () => {
-    const text = `Offertförfrågan – Fjäll Ryggsäck\n${summarize(state)}\nTotalt: ${price.total.toLocaleString('sv-SE')} kr\nLänk: ${currentShareURL()}`;
+    const text = `Offertförfrågan – ${PRODUCT_NAME}\n${summarize(state)}\nTotalt: ${price.total.toLocaleString('sv-SE')} kr\nLänk: ${currentShareURL()}`;
     const ok = await copyText(text);
     toast(ok ? 'Offert kopierad till urklipp' : 'Kunde inte kopiera');
   };

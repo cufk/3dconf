@@ -23,7 +23,7 @@ function swatch(hex, action, scope, extra = '') {
 export function createUI(root, handlers, presets) {
   root.innerHTML = '';
 
-  const secSize = section('Storlek', '01');
+  const secSize = section('Bredd', '01');
   const sizeSeg = el(`<div class="seg" data-role="sizes"></div>`);
   for (const s of SIZES) {
     const b = el(`<button data-action="size" data-id="${s.id}">${s.label} · ${s.price.toLocaleString('sv-SE')} kr</button>`);
@@ -32,24 +32,24 @@ export function createUI(root, handlers, presets) {
   secSize.querySelector('.body').appendChild(sizeSeg);
   root.appendChild(secSize);
 
-  const secParts = section('Delar – material & färg', '02');
+  const secParts = section('Ytor & material', '02');
   const partsBody = secParts.querySelector('.body');
   for (const p of PARTS) {
     const palette = paletteFor(p.palette);
     const matButtons = p.materials
       .map((m) => `<button data-action="mat" data-part="${p.id}" data-mat="${m}" title="${MATERIALS[m].desc}${MATERIALS[m].price ? ` (+${MATERIALS[m].price} kr)` : ''}">${MATERIALS[m].label}</button>`)
       .join('');
-    const swatches = palette
-      .map((c) => swatch(c.hex, 'color', 'part', `data-part="${p.id}"`))
-      .join('');
+    const swatches = p.locked
+      ? ''
+      : `<div class="swatches" data-role="sw-${p.id}">
+          ${palette.map((c) => swatch(c.hex, 'color', 'part', `data-part="${p.id}"`)).join('')}
+          <button class="swatch custom" data-action="custom" data-part="${p.id}" title="Egen färg…"><input type="color" data-action="customcolor" data-part="${p.id}" value="#888888"></button>
+        </div>`;
     const row = el(`
       <div class="row" data-part-row="${p.id}">
         <div class="row-label"><span>${p.label}</span><span class="val" data-role="colorname-${p.id}"></span></div>
         ${p.materials.length > 1 ? `<div class="seg" data-role="mats-${p.id}" style="margin-bottom:7px">${matButtons}</div>` : ''}
-        <div class="swatches" data-role="sw-${p.id}">
-          ${swatches}
-          <button class="swatch custom" data-action="custom" data-part="${p.id}" title="Egen färg…"><input type="color" data-action="customcolor" data-part="${p.id}" value="#888888"></button>
-        </div>
+        ${swatches}
         <div data-role="note-${p.id}"></div>
       </div>`);
     partsBody.appendChild(row);
@@ -112,7 +112,7 @@ export function createUI(root, handlers, presets) {
     ${sliderRow('Bloom-radie', 'bloomRadius', 0, 1.2, 0.05, '')}
     ${checkRow('SSAO (kontaktskuggor i skrymslen)', 'ssao')}
     ${sliderRow('SSAO-radie', 'ssaoRadius', 1, 14, 0.5, '')}
-    ${selectRow('Ljusmiljö (IBL)', 'env', [['studio', 'Studio'], ['solnedgang', 'Solnedgång'], ['industri', 'Industrihall']])}
+    ${selectRow('Ljusmiljö (IBL)', 'env', [['kokdag', 'Kök – dagsljus'], ['kokkvall', 'Kök – kväll (varm belysning)'], ['studio', 'Fotostudio']])}
     ${sliderRow('Miljöintensitet', 'envIntensity', 0, 2, 0.05, 'x')}
     ${sliderRow('Exponering', 'exposure', 0.5, 1.6, 0.01, '')}
     ${selectRow('Tonmappning', 'toneMapping', [['aces', 'ACES Filmic (rekommenderas)'], ['neutral', 'Neutral'], ['none', 'Av']])}
@@ -208,11 +208,13 @@ export function createUI(root, handlers, presets) {
         }
       }
       const swBox = root.querySelector(`[data-role="sw-${p.id}"]`);
-      for (const sw of swBox.querySelectorAll('.swatch[data-action="color"]')) {
-        sw.classList.toggle('active', sw.dataset.partHex.toLowerCase() === sel.color.toLowerCase());
+      if (swBox) {
+        for (const sw of swBox.querySelectorAll('.swatch[data-action="color"]')) {
+          sw.classList.toggle('active', sw.dataset.partHex.toLowerCase() === sel.color.toLowerCase());
+        }
       }
       const cn = root.querySelector(`[data-role="colorname-${p.id}"]`);
-      if (cn) cn.textContent = `${colorName(sel.color)}${sel.material !== 'metal' && p.id !== 'logo' ? '' : ''}`;
+      if (cn) cn.textContent = p.locked ? MATERIALS[sel.material].label : colorName(sel.color);
       const rule = ruleFor(state, { kind: 'partMaterial', part: p.id, material: sel.material });
       setNote(`note-${p.id}`, rule ? rule.msg : '');
     }

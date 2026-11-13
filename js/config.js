@@ -1,91 +1,97 @@
-export const FABRIC_COLORS = [
-  { id: 'graphite', name: 'Grafit', hex: '#2e3138' },
-  { id: 'black', name: 'Svart', hex: '#17181c' },
-  { id: 'navy', name: 'Marinblå', hex: '#1f3a5f' },
-  { id: 'forest', name: 'Skogsgrön', hex: '#2f4f3e' },
-  { id: 'burgundy', name: 'Bordeaux', hex: '#6e2b3a', premium: true },
-  { id: 'ochre', name: 'Ockra', hex: '#c98a2d', premium: true },
-  { id: 'sand', name: 'Sand', hex: '#d8c9a3' },
-  { id: 'sky', name: 'Himmel', hex: '#8fb6d9' },
-  { id: 'coral', name: 'Korall', hex: '#e0655a', premium: true },
-  { id: 'cream', name: 'Grädde', hex: '#f2ede2' }
+export const PRODUCT_NAME = 'Vägghängd köksfläkt';
+
+export const FINISH_COLORS = [
+  { id: 'stainless', name: 'Rostfritt stål', hex: '#c9ced4' },
+  { id: 'black', name: 'Matt svart', hex: '#1b1c20' },
+  { id: 'white', name: 'Högblank vit', hex: '#f2f3ef' },
+  { id: 'copper', name: 'Koppar', hex: '#b87333', premium: true }
 ];
 
-export const METAL_COLORS = [
-  { id: 'silver', name: 'Silver', hex: '#c9ced8' },
-  { id: 'brass', name: 'Mässing', hex: '#b08d4f', premium: true },
-  { id: 'gunmetal', name: 'Vapensvart', hex: '#26272c' }
+export const LED_COLORS = [
+  { id: 'varm', name: 'Varmvitt 2700K', hex: '#ffd9a0' },
+  { id: 'kall', name: 'Kallvitt 4000K', hex: '#d6e6ff' },
+  { id: 'av', name: 'Av', hex: '#26282e' }
 ];
+
+export const LED_OFF_HEX = '#26282e';
+
+const PALETTES = {
+  finish: FINISH_COLORS,
+  led: LED_COLORS
+};
 
 export const MATERIALS = {
-  canvas: { label: 'Vaxad bomullsduk', price: 0, desc: 'Matt, slitstark och väderbeständig duk' },
-  nylon: { label: 'Teknisk nylon', price: 250, desc: 'Lätt, glatt och vattenavvisande' },
-  leather: { label: 'Vegetabiliskt läder', price: 700, desc: 'Åldras vackert, patina och glans' },
-  metal: { label: 'Metall', price: 0, desc: 'Blixtlås och beslag i metall' }
+  stainless: { label: 'Rostfritt stål', price: 0, color: '#c9ced4', desc: 'Borstat rostfritt stål, klassisk kökslook' },
+  black: { label: 'Matt svart', price: 350, color: '#1b1c20', desc: 'Matt svartlackerad metall' },
+  white: { label: 'Högblank vit', price: 350, color: '#f2f3ef', desc: 'Högblank vitlackerad yta' },
+  copper: { label: 'Koppar', price: 1400, color: '#b87333', desc: 'Solid koppar som åldras vackert' },
+  alu: { label: 'Aluminiumfilter', price: 0, color: '#a8adb5', desc: 'Metallnät, diskmaskinståligt' },
+  carbon: { label: 'Kolfilter', price: 250, color: '#26262a', desc: 'Aktivt kolfilter för recirkulation' },
+  glassdark: { label: 'Svart kontrollglas', price: 0, color: '#141519', desc: 'Härdat svart glas med touchknappar' },
+  led: { label: 'LED-belysning', price: 199, color: '#ffd9a0', desc: 'Justerbar LED under kåpan' }
 };
 
 export const PREMIUM_COLOR_PRICE = 150;
 
 export const SIZES = [
-  { id: 's16', label: '16 L – Kompakt', volume: '16 L', scale: 0.86, price: 1295 },
-  { id: 'm21', label: '21 L – Standard', volume: '21 L', scale: 1.0, price: 1595 },
-  { id: 'l28', label: '28 L – Expedition', volume: '28 L', scale: 1.13, price: 1895 }
+  { id: 'w60', label: '60 cm', volume: '60 cm', width: 6.0, scale: 1.0, price: 2995 },
+  { id: 'w70', label: '70 cm', volume: '70 cm', width: 7.0, scale: 1.0, price: 3495 },
+  { id: 'w90', label: '90 cm', volume: '90 cm', width: 9.0, scale: 1.0, price: 4295 }
 ];
 
 export const PARTS = [
-  { id: 'body', label: 'Kropp', palette: 'fabric', materials: ['canvas', 'nylon', 'leather'], defaultMaterial: 'canvas', defaultColor: '#2e3138' },
-  { id: 'pocket', label: 'Framficka', palette: 'fabric', materials: ['canvas', 'nylon', 'leather'], defaultMaterial: 'canvas', defaultColor: '#1f3a5f' },
-  { id: 'bottom', label: 'Botten', palette: 'fabric', materials: ['canvas', 'leather'], defaultMaterial: 'leather', defaultColor: '#17181c' },
-  { id: 'straps', label: 'Axelremmar', palette: 'fabric', materials: ['canvas', 'nylon'], defaultMaterial: 'canvas', defaultColor: '#17181c' },
-  { id: 'handle', label: 'Handtag', palette: 'fabric', materials: ['leather', 'canvas'], defaultMaterial: 'leather', defaultColor: '#17181c' },
-  { id: 'logo', label: 'Logotyp', palette: 'fabric', materials: ['metal'], defaultMaterial: 'metal', defaultColor: '#f2ede2' },
-  { id: 'zipper', label: 'Blixtlås', palette: 'metal', materials: ['metal'], defaultMaterial: 'metal', defaultColor: '#c9ced8' }
+  { id: 'canopy', label: 'Kåpa', materials: ['stainless', 'black', 'white', 'copper'], locked: true, defaultMaterial: 'stainless', defaultColor: '#c9ced4' },
+  { id: 'chimney', label: 'Skorsten', materials: ['stainless', 'black', 'white'], locked: true, defaultMaterial: 'stainless', defaultColor: '#c9ced4' },
+  { id: 'filter', label: 'Fettfilter', materials: ['alu', 'carbon'], locked: true, defaultMaterial: 'alu', defaultColor: '#a8adb5' },
+  { id: 'controls', label: 'Kontrollpanel', materials: ['glassdark'], locked: true, defaultMaterial: 'glassdark', defaultColor: '#141519' },
+  { id: 'led', label: 'Belysning', materials: ['led'], locked: false, palette: 'led', defaultMaterial: 'led', defaultColor: '#ffd9a0' }
 ];
 
 export const ACCESSORIES = [
-  { id: 'seatPad', label: 'Sittunderlag', price: 249, colorable: true, palette: 'fabric', defaultColor: '#d8c9a3' },
-  { id: 'bottleHolder', label: 'Flaskhållare', price: 149, colorable: true, palette: 'fabric', defaultColor: '#2f4f3e' },
-  { id: 'chestStrap', label: 'Bröstrem med spänne', price: 99, colorable: false },
-  { id: 'keyRing', label: 'Nyckelring i läder', price: 79, colorable: false }
+  { id: 'glasfront', label: 'Glasfront i härdat glas', price: 599, colorable: false },
+  { id: 'chimneyExt', label: 'Skorstensförlängning 50 cm', price: 399, colorable: false },
+  { id: 'mountRail', label: 'Monteringsskena i stål', price: 149, colorable: false }
 ];
 
 export const RULES = [
   {
-    target: { kind: 'accessory', id: 'seatPad' },
-    when: (s) => s.size !== 's16',
-    msg: 'Sittunderlaget passar bara 21 L och 28 L – ryggsäcken blir för smal i 16 L.'
+    target: { kind: 'partMaterial', part: 'canopy', material: 'copper' },
+    when: (s) => s.size !== 'w60',
+    msg: 'Kåpa i koppar finns bara i 70 och 90 cm – 60 cm klarar inte vikten.'
   },
   {
-    target: { kind: 'partMaterial', part: 'pocket', material: 'leather' },
-    when: (s) => s.size !== 's16',
-    msg: 'Framficka i läder finns bara i 21 L och 28 L.'
+    target: { kind: 'accessory', id: 'glasfront' },
+    when: (s) => s.size !== 'w60',
+    msg: 'Glasfront finns bara i 70 och 90 cm.'
   },
   {
-    target: { kind: 'partMaterial', part: 'body', material: 'leather' },
-    when: (s) => s.size !== 's16',
-    msg: 'Helt kropp i läder finns bara i 21 L och 28 L.'
+    target: { kind: 'partMaterial', part: 'chimney', material: 'white' },
+    when: (s) => ['white', 'black'].includes(s.parts.canopy.material),
+    msg: 'Vitlackerad skorsten passar bara ihop med vit eller svart kåpa.'
   },
   {
-    target: { kind: 'partMaterial', part: 'handle', material: 'leather' },
-    when: () => true,
-    msg: ''
+    target: { kind: 'partMaterial', part: 'filter', material: 'carbon' },
+    when: (s) => s.parts.canopy.material !== 'copper',
+    msg: 'Kolfilter monteras inte i kombination med koppar-kåpa.'
   }
 ];
 
 export function paletteFor(kind) {
-  return kind === 'metal' ? METAL_COLORS : FABRIC_COLORS;
+  return PALETTES[kind] || FINISH_COLORS;
+}
+
+export function allColors() {
+  return Object.values(PALETTES).flat();
 }
 
 export function colorName(hex) {
   if (!hex) return '';
-  const all = [...FABRIC_COLORS, ...METAL_COLORS];
-  const hit = all.find((c) => c.hex.toLowerCase() === String(hex).toLowerCase());
+  const hit = allColors().find((c) => c.hex.toLowerCase() === String(hex).toLowerCase());
   return hit ? hit.name : hex;
 }
 
 export function isPremiumColor(hex) {
-  const all = [...FABRIC_COLORS, ...METAL_COLORS];
-  const hit = all.find((c) => c.hex.toLowerCase() === String(hex).toLowerCase());
+  const hit = allColors().find((c) => c.hex.toLowerCase() === String(hex).toLowerCase());
   return !!(hit && hit.premium);
 }
 
@@ -114,7 +120,7 @@ export function defaultState() {
   }
   return {
     v: 1,
-    size: 'm21',
+    size: 'w70',
     parts,
     acc,
     accColors,
@@ -129,12 +135,12 @@ export function defaultQuality() {
     shadowMap: 2048,
     shadowsEnabled: true,
     bloom: true,
-    bloomStrength: 0.35,
+    bloomStrength: 0.3,
     bloomRadius: 0.55,
-    bloomThreshold: 0.82,
+    bloomThreshold: 0.85,
     ssao: true,
     ssaoRadius: 7,
-    env: 'studio',
+    env: 'kokdag',
     envIntensity: 1.0,
     exposure: 1.05,
     toneMapping: 'aces',
@@ -188,7 +194,11 @@ export function enforceRules(state) {
     const cur = state.parts[p.id];
     const r = ruleFor(state, { kind: 'partMaterial', part: p.id, material: cur.material });
     if (r) {
-      cur.material = p.materials.find((m) => isTargetAllowed({ ...state, parts: { ...state.parts, [p.id]: { ...cur, material: m } } }, { kind: 'partMaterial', part: p.id, material: m })) || p.materials[0];
+      const candidate = p.materials.find((m) => {
+        const test = { ...state, parts: { ...state.parts, [p.id]: { ...cur, material: m } } };
+        return isTargetAllowed(test, { kind: 'partMaterial', part: p.id, material: m });
+      });
+      cur.material = candidate || p.materials[0];
       changed.push({ target: r.target, msg: r.msg });
     }
   }
@@ -198,18 +208,15 @@ export function enforceRules(state) {
 export function computePrice(state) {
   const lines = [];
   const size = sizeDef(state.size);
-  lines.push({ label: `Ryggsäck ${size.volume} (grundpris)`, amount: size.price });
+  lines.push({ label: `${PRODUCT_NAME} ${size.volume} (grundpris)`, amount: size.price });
   for (const p of PARTS) {
     const sel = state.parts[p.id];
     const mat = MATERIALS[sel.material];
     if (mat && mat.price > 0) {
       lines.push({ label: `${p.label} – ${mat.label}`, amount: mat.price });
     }
-    if (isPremiumColor(sel.color) && p.palette === 'fabric') {
+    if (isPremiumColor(sel.color)) {
       lines.push({ label: `${p.label} – premiumfärg ${colorName(sel.color)}`, amount: PREMIUM_COLOR_PRICE });
-    }
-    if (isPremiumColor(sel.color) && p.palette === 'metal') {
-      lines.push({ label: `${p.label} – ${colorName(sel.color)}`, amount: PREMIUM_COLOR_PRICE });
     }
   }
   for (const a of ACCESSORIES) {
@@ -223,17 +230,13 @@ export function computePrice(state) {
 
 export function summarize(state) {
   const size = sizeDef(state.size);
-  const rows = [`Storlek: ${size.label}`];
+  const rows = [`Produkt: ${PRODUCT_NAME} ${size.volume}`];
   for (const p of PARTS) {
     const sel = state.parts[p.id];
-    rows.push(`${p.label}: ${MATERIALS[sel.material].label}, ${colorName(sel.color)}`);
+    rows.push(`${p.label}: ${MATERIALS[sel.material].label}${p.locked ? '' : `, ${colorName(sel.color)}`}`);
   }
   const on = ACCESSORIES.filter((a) => state.acc[a.id]);
-  if (on.length) {
-    rows.push('Tillval: ' + on.map((a) => (a.colorable ? `${a.label} (${colorName(state.accColors[a.id])})` : a.label)).join(', '));
-  } else {
-    rows.push('Tillval: inga');
-  }
+  rows.push('Tillval: ' + (on.length ? on.map((a) => a.label).join(', ') : 'inga'));
   const price = computePrice(state);
   rows.push(`Totalt: ${price.total.toLocaleString('sv-SE')} kr`);
   return rows.join('\n');
