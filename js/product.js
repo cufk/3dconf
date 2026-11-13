@@ -188,6 +188,7 @@ export function createProduct() {
 
   return {
     apply,
-    getGroup: () => group
+    getGroup: () => group,
+    refs
   };
 }

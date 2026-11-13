@@ -12,11 +12,48 @@ och skuggor får en realistisk kontext.
 
 ```
 cd 3dconf
-python3 -m http.server 8000
+npm run serve        # eller: python3 -m http.server 8000
 # öppna http://127.0.0.1:8000/
 ```
 
 Allt (inklusive Three.js r170) ligger lokalt i `vendor/` – appen fungerar helt offline.
+
+## Automatiserad testning och validering (körs före varje push och i CI)
+
+```
+npm test
+```
+
+Det kör:
+
+1. **Syntaxtest** – `node --check` på alla JS-filer (`js/`, `tests/`, `scripts/`)
+2. **Enhetstester** (`tests/config.test.mjs`) – regler, prissättning, sammanfattning,
+   encode/decode roundtrip, sanering av ogiltig state
+3. **Smoke-test** (`tests/smoke.test.mjs`):
+   - lokal loopback-server där `index.html`, alla resurser och hela `import`-kedjan måste svara 200
+   - vendorerad Three.js r170 laddas headless och bygger geometri
+   - hela köksfläkten byggs headless: breddväxling bygger om modellen, finishbyte byter material,
+     tillval blir synliga, LED av/på styr punktljusen
+
+Samma kommando körs automatiskt i GitHub Actions (`.github/workflows/ci.yml`) på varje push/PR.
+
+## Så testar du manuellt (checklista när du får en ny version)
+
+1. `npm test` – alla automatiska tester måste vara gröna
+2. `npm run serve` → öppna http://127.0.0.1:8000/
+3. Gå igenom checklistan:
+   - [ ] Dra för att rotera, scrolla för att zooma, högerklicka för panorera
+   - [ ] Byt bredd 60 → 90 cm – modellen ska byggas om i rätt storlek
+   - [ ] Välj 60 cm + försök koppar-kåpa/glasfront – ska vara inaktiverat med förklaring
+   - [ ] Byt yta till Koppar / Matt svart / Högblank vit – modellen ska byta finish direkt
+   - [ ] Belysning: Varmvitt/Kallvitt/Av – LED under kåpan och punktljuset ska följa med
+   - [ ] Ljusmiljö: Kök dagsljus / Kök kväll / Fotostudio
+   - [ ] Kvalitet: prova presets Låg/Medel/Hög/Ultra + skjutreglage (FPS-chippet uppe till vänster)
+   - [ ] Tillval: glasfront, skorstensförlängning, monteringsskena – syns med pop-animation
+   - [ ] "Kopiera delbar länk" – öppna länken i nytt fönster, konfigurationen ska laddas
+   - [ ] "Skicka offert" – sammanfattning med alla val och totalt pris
+   - [ ] Exportera PNG 2K/4K och JSON – filer laddas ner
+   - [ ] Mobilvy (smal fönster): ☰-knappen öppnar inställningspanelen
 
 ## Funktionalitet
 
