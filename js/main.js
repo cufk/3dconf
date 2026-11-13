@@ -179,6 +179,7 @@ const ui = createUI(document.getElementById('panel-sections'), {
   },
   onQualityPatch(patch, live) {
     quality.applyPatch(patch);
+    product.setEnvTint(quality.state.env);
     if (!live) persist();
     refreshUI();
   },
@@ -293,6 +294,7 @@ window.addEventListener('hashchange', () => {
   if (s) {
     state = s;
     quality.applyPatch(state.quality);
+    product.setEnvTint(quality.state.env);
     commit();
   }
 });
@@ -312,6 +314,7 @@ resize();
 
 quality.applyPatch(state.quality);
 commit();
+product.setEnvTint(quality.state.env);
 
 let last = performance.now();
 let frames = 0;
@@ -339,6 +342,7 @@ function animate(now) {
 
   controls.autoRotate = quality.state.autoRotate;
   controls.update();
+  quality.setFocus(camera.position.distanceTo(controls.target));
   quality.render();
 
   frames++;

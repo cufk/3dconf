@@ -175,6 +175,19 @@ test('headless: hela köksfläkten byggs, växlar bredd, yta, tillval och LED', 
   assert.equal(product.refs.parts.filter[0].material.roughness, 0.96, 'kolfilter ska vara matt');
 });
 
+test('headless: fönsterfärg följer vald ljusmiljö', async () => {
+  stubDocument();
+  const { createProduct } = await import('../js/product.js');
+  const { defaultState } = await import('../js/config.js');
+  const product = createProduct();
+  product.apply(defaultState(), { tweenColor() {}, lerpScale() {}, pop(o) { o.visible = true; } });
+  assert.ok(product.refs.windowPane, 'fönsterruta saknas');
+  product.setEnvTint('kokkvall');
+  assert.equal(product.refs.windowPane.material.color.getHex(), 0x2a3d66);
+  product.setEnvTint('kokdag');
+  assert.equal(product.refs.windowPane.material.color.getHex(), 0xbfd4e8);
+});
+
 test('moduler: alla app-moduler kan importeras headless', async () => {
   stubDocument();
   const ui = await import('../js/ui.js');

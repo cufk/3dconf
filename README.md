@@ -49,6 +49,7 @@ Samma kommando körs automatiskt i GitHub Actions (`.github/workflows/ci.yml`) p
    - [ ] Belysning: Varmvitt/Kallvitt/Av – LED under kåpan och punktljuset ska följa med
    - [ ] Ljusmiljö: Kök dagsljus / Kök kväll / Fotostudio
    - [ ] Kvalitet: prova presets Låg/Medel/Hög/Ultra + skjutreglage (FPS-chippet uppe till vänster)
+   - [ ] Skärpedjup (DOF) på/av + bländare; VSM-skuggor; vignett/granularitet – zooma in på stålet och se fönsterreflexerna
    - [ ] Tillval: glasfront, skorstensförlängning, monteringsskena – syns med pop-animation
    - [ ] "Kopiera delbar länk" – öppna länken i nytt fönster, konfigurationen ska laddas
    - [ ] "Skicka offert" – sammanfattning med alla val och totalt pris
@@ -74,12 +75,19 @@ Samma kommando körs automatiskt i GitHub Actions (`.github/workflows/ci.yml`) p
 
 ## Högre kvalitet på modellen
 
-- Supersampling (render-skala 0.5–3x) + MSAA, förinställningar Låg/Medel/Hög/Ultra.
-- PCFSoft-skuggor upp till 4096 px, SSAO (kontaktskuggor) och UnrealBloom via post-processing.
+- Supersampling (render-skala 0.5–3x) + MSAA + FXAA vid låg upplösning, förinställningar Låg/Medel/Hög/Ultra.
+- Skuggor upp till 4096 px i två lägen: PCFSoft eller extra mjuka VSM (radius + blur-samples).
+- Post-processing-kedja: SSAO (kontaktskuggor), UnrealBloom, skärpedjup (DOF/Bokeh, fokus följer kameran),
+  samt slutpass med vignett + filmgranularitet.
 - ACES Filmic / Neutral tonmappning, exponeringskontroll, köksanpassade IBL-miljöer
-  (dagsljus / kväll / fotostudio) via PMREM.
-- Procedurella PBR-material: borstat metall (bump), koppar, clearcoat-lack,
-  genomskinligt glas, filterväv, stenbänk – med anisotropisk filtrering.
+  (dagsljus / kväll / fotostudio) via PMREM – dagsljusmiljön innehåller ett skarpt "fönster"
+  som ger långa reflexer i det borstade stålet.
+- Procedurella PBR-material i hög upplösning (upp till 1024 px): borstat rostfritt stål med
+  anisotropisk struktur + roughness-karta, koppar, clearcoat-lack, riktigt transmissivt glas
+  (transmission + IOR), filterväv, stenbänk, trä.
+- Detaljerad geometri: kåpa med kantlist, skorsten med ventilationsspringor, skruvar,
+  varumärkesplakett "3DC", filter med ram och handtag, glasfront med metallram,
+  kontrollpanel med bezel/knappar/display, köksmiljö med fönster, skåpsluckor, bänkskiva och rekvisita.
 - Mjuka färgövergångar och "pop"-animation när tillval aktiveras.
 - Export av högupplösta stillbilder (PNG 2K/4K).
 

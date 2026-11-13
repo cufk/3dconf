@@ -106,12 +106,19 @@ export function createUI(root, handlers, presets) {
   qBody.appendChild(el(`
     ${sliderRow('Upplösning (supersampling)', 'renderScale', 0.5, 3, 0.05, 'x')}
     ${selectRow('Skuggkvalitet', 'shadowMap', [[1024, 'Låg – 1024'], [2048, 'Medel – 2048'], [4096, 'Hög – 4096']])}
-    ${checkRow('Mjuka skuggor (PCFSoft)', 'shadowsEnabled')}
+    ${selectRow('Skuggtyp', 'shadowType', [['pcfsoft', 'Mjuk (PCFSoft)'], ['vsm', 'Extra mjuk (VSM)']])}
+    ${checkRow('Skuggor på', 'shadowsEnabled')}
     ${checkRow('Bloom (glöd i högdagrar)', 'bloom')}
     ${sliderRow('Bloom-styrka', 'bloomStrength', 0, 1.5, 0.05, '')}
     ${sliderRow('Bloom-radie', 'bloomRadius', 0, 1.2, 0.05, '')}
     ${checkRow('SSAO (kontaktskuggor i skrymslen)', 'ssao')}
     ${sliderRow('SSAO-radie', 'ssaoRadius', 1, 14, 0.5, '')}
+    ${checkRow('Skärpedjup (DOF) – fokus följer kameran', 'dof')}
+    ${sliderRow('Bländare (DOF)', 'dofAperture', 0, 0.002, 0.00005, '')}
+    ${sliderRow('Max oskärpa (DOF)', 'dofMaxblur', 0, 0.03, 0.0005, '')}
+    ${checkRow('FXAA kantutjämning (bra vid låg upplösning)', 'fxaa')}
+    ${sliderRow('Vignett', 'vignette', 0, 1, 0.01, '')}
+    ${sliderRow('Filmgranularitet', 'grain', 0, 0.05, 0.001, '')}
     ${selectRow('Ljusmiljö (IBL)', 'env', [['kokdag', 'Kök – dagsljus'], ['kokkvall', 'Kök – kväll (varm belysning)'], ['studio', 'Fotostudio']])}
     ${sliderRow('Miljöintensitet', 'envIntensity', 0, 2, 0.05, 'x')}
     ${sliderRow('Exponering', 'exposure', 0.5, 1.6, 0.01, '')}
@@ -180,7 +187,9 @@ export function createUI(root, handlers, presets) {
 
   function fmtVal(key, v) {
     if (key === 'renderScale' || key === 'envIntensity') return `${v}x`;
-    if (key === 'exposure') return v.toFixed(2);
+    if (key === 'exposure' || key === 'vignette') return v.toFixed(2);
+    if (key === 'dofAperture') return v.toFixed(5);
+    if (key === 'dofMaxblur' || key === 'grain') return v.toFixed(3);
     return String(v);
   }
 
